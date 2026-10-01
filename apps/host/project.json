@@ -7,12 +7,13 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@angular/build:application",
+      "executor": "@nx/angular:webpack-browser",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/host",
-        "browser": "apps/host/src/main.ts",
+        "index": "apps/host/src/index.html",
+        "main": "apps/host/src/main.ts",
         "tsConfig": "apps/host/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -21,7 +22,10 @@
             "input": "apps/host/public"
           }
         ],
-        "styles": ["apps/host/src/styles.scss"]
+        "styles": ["apps/host/src/styles.scss"],
+        "customWebpackConfig": {
+          "path": "apps/host/webpack.config.ts"
+        }
       },
       "configurations": {
         "production": {
@@ -37,19 +41,29 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/host/webpack.prod.config.ts"
+          }
         },
         "development": {
+          "buildOptimizer": false,
           "optimization": false,
+          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "namedChunks": true
         }
       }
     },
     "serve": {
       "continuous": true,
-      "executor": "@angular/build:dev-server",
+      "executor": "@nx/angular:module-federation-dev-server",
       "defaultConfiguration": "development",
+      "options": {
+        "port": 4200,
+        "publicHost": "http://localhost:4200"
+      },
       "configurations": {
         "production": {
           "buildTarget": "host:build:production"
@@ -57,6 +71,12 @@
         "development": {
           "buildTarget": "host:build:development"
         }
+      }
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "host:build"
       }
     },
     "lint": {
@@ -76,7 +96,6 @@
       "options": {
         "buildTarget": "host:build",
         "port": 4200,
-        "staticFilePath": "dist/apps/host/browser",
         "spa": true
       }
     }
