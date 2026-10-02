@@ -15,7 +15,6 @@
     "skipDefaultLibCheck": true,
     "strict": false,
     "paths": {
-      "admin/Routes": ["./apps/admin/src/app/remote-entry/entry.routes.ts"],
       "public/Routes": ["./apps/public/src/app/remote-entry/entry.routes.ts"],
       "user/Routes": ["./apps/user/src/app/remote-entry/entry.routes.ts"],
       "@nx-esbuild-native-federation/core": ["./libs/core/src/index.ts"],

@@ -7,13 +7,66 @@
   "tags": [],
   "targets": {
     "build": {
-      "executor": "@nx/angular:webpack-browser",
-      "outputs": ["{options.outputPath}"],
+      "executor": "@angular-architects/native-federation:build",
+      "options": {
+        "cacheExternalArtifacts": true,
+        "tsConfig": "apps/admin/tsconfig.federation.json"
+      },
+      "configurations": {
+        "production": {
+          "target": "admin:esbuild:production"
+        },
+        "development": {
+          "target": "admin:esbuild:development",
+          "dev": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-architects/native-federation:build",
+      "options": {
+        "target": "admin:serve-original:development",
+        "tsConfig": "apps/admin/tsconfig.federation.json",
+        "rebuildDelay": 500,
+        "cacheExternalArtifacts": true,
+        "dev": true,
+        "devServer": true,
+        "port": 0
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
+      "options": {
+        "jestConfig": "apps/admin/jest.config.cts",
+        "tsConfig": "apps/admin/tsconfig.spec.json"
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "admin:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/admin/browser",
+        "spa": true
+      }
+    },
+    "esbuild": {
+      "executor": "@angular/build:application",
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "defaultConfiguration": "production",
       "options": {
         "outputPath": "dist/apps/admin",
-        "index": "apps/admin/src/index.html",
-        "main": "apps/admin/src/main.ts",
+        "browser": "apps/admin/src/main.ts",
         "tsConfig": "apps/admin/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -22,10 +75,12 @@
             "input": "apps/admin/public"
           }
         ],
-        "styles": ["apps/admin/src/styles.scss"],
-        "customWebpackConfig": {
-          "path": "apps/admin/webpack.config.ts"
-        }
+        "styles": [
+          "apps/admin/src/styles.scss"
+        ],
+        "polyfills": [
+          "es-module-shims"
+        ]
       },
       "configurations": {
         "production": {
@@ -41,72 +96,29 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all",
-          "customWebpackConfig": {
-            "path": "apps/admin/webpack.prod.config.ts"
-          }
+          "outputHashing": "all"
         },
         "development": {
-          "buildOptimizer": false,
           "optimization": false,
-          "vendorChunk": true,
           "extractLicenses": false,
-          "sourceMap": true,
-          "namedChunks": true
+          "sourceMap": true
         }
       }
     },
-    "serve": {
+    "serve-original": {
       "continuous": true,
-      "executor": "@nx/angular:dev-server",
+      "executor": "@angular/build:dev-server",
       "defaultConfiguration": "development",
-      "options": {
-        "port": 4201,
-        "publicHost": "http://localhost:4201"
-      },
       "configurations": {
         "production": {
-          "buildTarget": "admin:build:production"
+          "buildTarget": "admin:esbuild:production"
         },
         "development": {
-          "buildTarget": "admin:build:development"
+          "buildTarget": "admin:esbuild:development"
         }
       },
-      "dependsOn": ["host:serve"]
-    },
-    "extract-i18n": {
-      "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "admin:build"
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint"
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
-      "options": {
-        "jestConfig": "apps/admin/jest.config.cts",
-        "tsConfig": "apps/admin/tsconfig.spec.json"
-      }
-    },
-    "serve-static": {
-      "continuous": true,
-      "executor": "@nx/web:file-server",
-      "defaultConfiguration": "production",
-      "options": {
-        "buildTarget": "admin:build",
-        "port": 4201,
-        "watch": false
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "admin:build:development"
-        },
-        "production": {
-          "buildTarget": "admin:build:production"
-        }
+        "port": 4201
       }
     }
   }

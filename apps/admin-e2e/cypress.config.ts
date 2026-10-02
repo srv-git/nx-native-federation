@@ -9,8 +9,8 @@ module.exports = defineConfig({
         production: 'npx nx run admin:serve-static',
       },
       ciWebServerCommand: 'npx nx run admin:serve-static',
-      ciBaseUrl: 'http://localhost:4201',
+      ciBaseUrl: 'http://localhost:4200',
     }),
-    baseUrl: 'http://localhost:4201',
+    baseUrl: 'http://localhost:4200',
   },
 });

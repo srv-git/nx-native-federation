@@ -1,0 +1,5 @@
+{
+	"admin": "http://localhost:4200/remoteEntry.json",
+	"public": "http://localhost:4200/remoteEntry.json",
+	"user": "http://localhost:4200/remoteEntry.json"
+}
